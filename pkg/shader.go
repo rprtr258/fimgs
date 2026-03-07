@@ -169,7 +169,7 @@ void main() {
 
 	// FIX: sometimes fail with 0
 	if status := gl.CheckFramebufferStatus(gl.FRAMEBUFFER); status != gl.FRAMEBUFFER_COMPLETE {
-		return fmt.Errorf("incomplete framebuffer object, status is %d, gl error is %q", status, gl.GetError())
+		return fmt.Errorf("incomplete framebuffer object, status is %d, gl error is %d", status, gl.GetError())
 	}
 
 	// Install program

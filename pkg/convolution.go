@@ -66,7 +66,7 @@ func ApplyConvolution(im image.Image, kernel [][]int) image.RGBA {
 	for i := im.Bounds().Min.X; i < im.Bounds().Max.X; i++ {
 		for j := im.Bounds().Min.Y; j < im.Bounds().Max.Y; j++ {
 			r, g, b := 0, 0, 0
-			for di := 0; di < len(kernel); di++ {
+			for di := range kernel {
 				for dj := 0; dj < len(kernel[0]); dj++ {
 					i1 := i + dj - kernelHalfWidth
 					if i1 < 0 {

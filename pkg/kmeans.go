@@ -55,7 +55,7 @@ func initClusterCenters(pixelColors [][3]int64, clustersCount int) [][3]int64 {
 func kmeansIters(clustersCenters, pixelColors [][3]int64, clustersCount int) {
 	batchMaxSize := int(math.Sqrt(float64(len(pixelColors))))
 	sumAndCount := make([]int64, clustersCount*4) // count and sum of Rs, Gs, Bs
-	for epoch := 0; epoch < 300; epoch++ {
+	for range 300 {
 		k := rand.Intn(batchMaxSize) + 1
 		sumAndCount[0] = 0
 		for i := 1; i < len(sumAndCount); i *= 2 {
@@ -78,7 +78,7 @@ func kmeansIters(clustersCenters, pixelColors [][3]int64, clustersCount int) {
 			sumAndCount[minCluster*4+3] += pixelColor[2]
 		}
 		movement := int64(0)
-		for i := 0; i < clustersCount; i++ {
+		for i := range clustersCount {
 			count := sumAndCount[i*4+0]
 			if count == 0 {
 				continue

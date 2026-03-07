@@ -164,8 +164,6 @@ Example:
 		"horizontallines": fimgs.HORIZONTAL_LINES_KERNEL,
 		"verticallines":   fimgs.VERTICAL_LINES_KERNEL,
 	} {
-		filterName := filterName
-		kernel := kernel
 		convolutionCmds = append(convolutionCmds, &cli.Command{
 			Name:  filterName,
 			Usage: fmt.Sprintf("%s filter", strings.Title(filterName)),
@@ -180,9 +178,10 @@ Example:
 	}
 
 	app := cli.App{
-		Name:      "fimgs",
-		Usage:     "Applies filter to image",
-		UsageText: "Applies filter to image and saves new image",
+		Name:            "fimgs",
+		Usage:           "Applies filter to image",
+		UsageText:       "Applies filter to image and saves new image",
+		HideHelpCommand: true,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "image",

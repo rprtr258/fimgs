@@ -8,7 +8,7 @@ import (
 func makeColorArray0(len int) [][]int64 {
 	data := make([]int64, len*3)
 	res := make([][]int64, len)
-	for i := 0; i < len; i++ {
+	for i := range len {
 		res[i] = data[i*3 : i*3+3]
 	}
 	return res

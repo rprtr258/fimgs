@@ -16,23 +16,22 @@ USAGE:
    Applies filter to image and saves new image
 
 COMMANDS:
-   edgedetect2      Edgedetect2 filter
-   verticallines    Verticallines filter
-   emboss           Emboss filter
-   sharpen          Sharpen filter
-   edgeenhance      Edgeenhance filter
-   edgedetect1      Edgedetect1 filter
-   horizontallines  Horizontallines filter
    blur             Blur filter
-   weakblur         Weakblur filter
    cluster          Cluster colors
-   quadtree         Quad tree filter
-   shader           Shader filter
+   edgedetect1      Edgedetect1 filter
+   edgedetect2      Edgedetect2 filter
+   edgeenhance      Edgeenhance filter
+   emboss           Emboss filter
    hilbert          Hilbert curve filter
    hilbertdarken    Hilbert darken curve filter
-   zcurve           Z curve filter
+   horizontallines  Horizontallines filter
    median           Median filter
-   help, h          Shows a list of commands or help for one command
+   quadtree         Quad tree filter
+   shader           Shader filter
+   sharpen          Sharpen filter
+   verticallines    Verticallines filter
+   weakblur         Weakblur filter
+   zcurve           Z curve filter
 
 GLOBAL OPTIONS:
    --image value, -i value  input image filename
@@ -48,8 +47,8 @@ GLOBAL OPTIONS:
 |blur.png|cluster.png|edgedetect1.png|
 |![](./img/static/edgedetect2.png)|![](./img/static/edgeenhance.png)|![](./img/static/emboss.png)|
 |edgedetect2.png|edgeenhance.png|emboss.png|
-|![](./img/static/hilbertdarken.png)|![](./img/static/hilbert.png)|![](./img/static/horizontallines.png)|
-|hilbertdarken.png|hilbert.png|horizontallines.png|
+|![](./img/static/hilbert.png)|![](./img/static/hilbertdarken.png)|![](./img/static/horizontallines.png)|
+|hilbert.png|hilbertdarken.png|horizontallines.png|
 |![](./img/static/median.png)|![](./img/static/orig.png)|![](./img/static/quadtree.png)|
 |median.png|orig.png|quadtree.png|
 |![](./img/static/shader_rgb.png)|![](./img/static/sharpen.png)|![](./img/static/verticallines.png)|

@@ -8,14 +8,6 @@ import (
 	"math"
 )
 
-func min(x, y int) int {
-	if x < y {
-		return x
-	} else {
-		return y
-	}
-}
-
 func min4(x, y, z, w int) int {
 	return min(min(x, y), min(z, w))
 }
@@ -25,14 +17,6 @@ func calcMinColor4(c1, c2, c3, c4 Color) Color {
 		min4(c1[0], c2[0], c3[0], c4[0]),
 		min4(c1[1], c2[1], c3[1], c4[1]),
 		min4(c1[2], c2[2], c3[2], c4[2]),
-	}
-}
-
-func max(x, y int) int {
-	if x < y {
-		return y
-	} else {
-		return x
 	}
 }
 
@@ -81,7 +65,7 @@ func QuadTree(im image.Image, power float64, threshold int) *image.RGBA {
 	blockWidth := make([]int, imageSize)
 	minColor := make([]Color, imageSize)
 	maxColor := make([]Color, imageSize)
-	for i := 0; i < imageSize; i++ {
+	for i := range imageSize {
 		dsuParent[i] = i
 		blockWidth[i] = 1
 		r, g, b, _ := im.At(i%imageWidth, i/imageWidth).RGBA()
@@ -119,7 +103,7 @@ func QuadTree(im image.Image, power float64, threshold int) *image.RGBA {
 	}
 	himage := image.NewRGBA(im.Bounds())
 	draw.Draw(himage, himage.Bounds(), &image.Uniform{color.RGBA{0, 0, 0, 255}}, image.Point{}, draw.Src)
-	for i := 0; i < imageSize; i++ {
+	for i := range imageSize {
 		p := parent(dsuParent, i)
 		halfQuadSize := blockWidth[p] / 2
 		quadCenter := [2]int{p%imageWidth + halfQuadSize, p/imageWidth + halfQuadSize}

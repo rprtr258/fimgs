@@ -63,7 +63,7 @@ func downloadImage(url string) (_imageFilename string, _imageId string, _err err
 
 var rootTemplate = template.Must(template.ParseGlob("templates/*.html")) // TODO: parse once // TODO: embed
 
-func renderTemplateOrPanic(w io.Writer, name string, data interface{}) {
+func renderTemplateOrPanic(w io.Writer, name string, data any) {
 	if err := rootTemplate.ExecuteTemplate(w, name, data); err != nil {
 		// TODO: return and handle error
 		log.Fatalf("Error rendering template: name=%q data=%v err=%q", name, data, err)
