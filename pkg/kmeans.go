@@ -6,22 +6,20 @@ import (
 	"image/color"
 	"math"
 	"math/rand"
+	"simd/archsimd"
 )
 
-func makeColorArray(len int) [][3]int64 {
-	return make([][3]int64, len)
+func makeColorArray(len int) []archsimd.Int64x4 {
+	return make([]archsimd.Int64x4, len)
 }
 
-func abs64(x int64) int64 {
-	mask := x >> 63
-	return (x + mask) ^ mask
+func minkowskiiDist(a, b archsimd.Int64x4) int64 {
+	d := a.Sub(b).Abs()
+	t := d.GetHi().Add(d.GetLo())
+	return t.GetElem(0) + t.GetElem(1)
 }
 
-func minkowskiiDist(a, b [3]int64) int64 {
-	return abs64(a[0]-b[0]) + abs64(a[1]-b[1]) + abs64(a[2]-b[2])
-}
-
-func initClusterCenters(pixelColors [][3]int64, clustersCount int) [][3]int64 {
+func initClusterCenters(pixelColors []archsimd.Int64x4, clustersCount int) []archsimd.Int64x4 {
 	clustersCenters := makeColorArray(clustersCount)
 	clustersCenters[clustersCount-1] = pixelColors[rand.Intn(len(pixelColors))]
 	minClusterDistance := make([]int64, len(pixelColors))
@@ -52,15 +50,15 @@ func initClusterCenters(pixelColors [][3]int64, clustersCount int) [][3]int64 {
 	return clustersCenters
 }
 
-func kmeansIters(clustersCenters, pixelColors [][3]int64, clustersCount int) {
+func kmeansIters(clustersCenters, pixelColors []archsimd.Int64x4, clustersCount int) {
 	batchMaxSize := int(math.Sqrt(float64(len(pixelColors))))
-	sumAndCount := make([]int64, clustersCount*4) // count and sum of Rs, Gs, Bs
+	sumAndCount := make([]archsimd.Int64x4, clustersCount) // sum of Rs, Gs, Bs and count
 	for range 300 {
-		k := rand.Intn(batchMaxSize) + 1
-		sumAndCount[0] = 0
-		for i := 1; i < len(sumAndCount); i *= 2 {
-			copy(sumAndCount[i:], sumAndCount[:i])
+		for i := range sumAndCount {
+			sumAndCount[i] = archsimd.Int64x4{}
 		}
+
+		k := rand.Intn(batchMaxSize) + 1
 		for i := k; i < len(pixelColors); i += k {
 			pixelColor := pixelColors[i]
 			minCluster := 0
@@ -72,22 +70,14 @@ func kmeansIters(clustersCenters, pixelColors [][3]int64, clustersCount int) {
 					minDist = newDist
 				}
 			}
-			sumAndCount[minCluster*4+0]++
-			sumAndCount[minCluster*4+1] += pixelColor[0]
-			sumAndCount[minCluster*4+2] += pixelColor[1]
-			sumAndCount[minCluster*4+3] += pixelColor[2]
+			sumAndCount[minCluster] = sumAndCount[minCluster].Add(pixelColor)
 		}
 		movement := int64(0)
 		for i := range clustersCount {
-			count := sumAndCount[i*4+0]
-			if count == 0 {
-				continue
-			}
-			v := [3]int64{
-				sumAndCount[i*4+1] / count,
-				sumAndCount[i*4+2] / count,
-				sumAndCount[i*4+3] / count,
-			}
+			count := sumAndCount[i].GetLo().GetElem(0)
+			const S = 62
+			divisor := archsimd.BroadcastInt64x4((int64(1) << S) / count)
+			v := sumAndCount[i].Mul(divisor).ShiftAllRight(S)
 			movement += minkowskiiDist(clustersCenters[i], v)
 			clustersCenters[i] = v
 		}
@@ -104,7 +94,7 @@ func ApplyKMeans(im image.Image, clustersCount int) image.RGBA {
 		for i := 0; i < im.Bounds().Dx(); i++ {
 			k := i + j*imageWidth
 			r, g, b, _ := im.At(i, j).RGBA()
-			pixelColors[k] = [3]int64{int64(r), int64(g), int64(b)}
+			pixelColors[k] = archsimd.LoadInt64x4(&[4]int64{int64(r), int64(g), int64(b), 1})
 		}
 	}
 	rand.Seed(0)
@@ -124,10 +114,11 @@ func ApplyKMeans(im image.Image, clustersCount int) image.RGBA {
 					minDist = dist
 				}
 			}
+			x := clustersCenters[minCluster].And(archsimd.BroadcastInt64x4(0xFF00))
 			filtered_im.Set(i, j, color.RGBA{
-				uint8((clustersCenters[minCluster][0] & 0xFF00) >> 8),
-				uint8((clustersCenters[minCluster][1] & 0xFF00) >> 8),
-				uint8((clustersCenters[minCluster][2] & 0xFF00) >> 8),
+				uint8((x.GetHi().GetElem(0)) >> 8),
+				uint8((x.GetHi().GetElem(1)) >> 8),
+				uint8((x.GetLo().GetElem(0)) >> 8),
 				255,
 			})
 		}
