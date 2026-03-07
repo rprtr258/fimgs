@@ -62,7 +62,10 @@ func check(err error) {
 }
 
 func execute_cmd(cmd string, args ...string) string {
-	output, err := exec.Command(cmd, args...).Output()
+	cm := exec.Command(cmd, args...)
+	cm.Stderr = os.Stderr
+	cm.Env = os.Environ()
+	output, err := cm.Output()
 	check(err)
 	return string(output)
 }
